@@ -1,0 +1,17 @@
+name: notify-portal
+
+on:
+  discussion:
+    types: [created, edited, deleted, category_changed]
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Rebuild the portal
+        env:
+          # Fine-grained PAT, repo sam-the-hai/learning-portal only, permission Contents: read and write
+          GH_TOKEN: ${{ secrets.PORTAL_DISPATCH_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then echo "::error::Thiếu secret PORTAL_DISPATCH_TOKEN"; exit 1; fi
+          gh api repos/sam-the-hai/learning-portal/dispatches -f event_type=status
